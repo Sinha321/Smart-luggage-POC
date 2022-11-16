@@ -31,18 +31,18 @@ AF_DCMotor M4(4);
 int i = 0;
 
 /* Declaring Middle Ultrasonic Pins */
-#define Mtrig A0;
-#define Mecho A1;
+#define Mtrig A0
+#define Mecho A1
 int Mduration = 0, Mdistance = 0;
 
 /* Declaring Right Ultrasonic Pins */
-#define Rtrig A2;
-#define Recho A3;
+#define Rtrig A2
+#define Recho A3
 int Rduration = 0, Rdistance = 0;
 
 /* Declaring left Ultrasonic Pins */
-#define Ltrig A4;
-#define Lecho A5;
+#define Ltrig A4
+#define Lecho A5
 int Lduration = 0, Ldistance = 0;
 
 int previousState = 0;
@@ -182,7 +182,6 @@ void moveForward()
 
 void velocity()
 {
-    x
     M1.run(FORWARD);
     M2.run(FORWARD);
     M3.run(FORWARD);
