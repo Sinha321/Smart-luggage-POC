@@ -17,10 +17,10 @@
 
 /*  Motor Connections(M)
             __
-      M1(O):  :(O)M2
+      M1(O):  :(O)M4
            |  |
            |  |
-      M3(O):__:(O)M4
+      M2(O):__:(O)M3
 
 */
 
@@ -51,13 +51,13 @@ void setup()
 {
 
     M1.setSpeed(255); // Motor Maximum Speed Configured.
-    M1.run(RELEASE);  // Motor is Configured in Release mode.
+    // M1.run(RELEASE);  // Motor is Configured in Release mode.
     M2.setSpeed(255);
-    M2.run(RELEASE);
+    // M2.run(RELEASE);
     M3.setSpeed(255);
-    M3.run(RELEASE);
+    // M3.run(RELEASE);
     M4.setSpeed(255);
-    M4.run(RELEASE);
+    // M4.run(RELEASE);
 
     /* Configure input and output port of sensors */
     pinMode(Mtrig, OUTPUT);
@@ -77,39 +77,39 @@ void loop()
 
     //######################################################
 
-    if ((Ldistance < 120 && Rdistance < 120 && count == 0) || Mdistance < 100 && Mdistance > 50) // count = 0 means first start so accelerate then move constant
-    {
-        count = 1;
-        moveForward();
-        velocity();
-    }
-
-    else if ((Mdistance < 50 || Ldistance < 50 || Rdistance < 50) && count > 0) // when robot is moving and person moves back withn 50 cm then robot moves back
-    {
-        count = 0;
-        moveBack();
-    }
-    else if (Ldistance < 120 && Rdistance < 120 && Mdistance < 100 && count == 1) // constant movement
-    {
-        count = 2;
-        velocity();
-    }
-
-//     if (Ldistance > 120 && Rdistance > 120 && Mdistance > 100) // Human is 120 cm far from robot then robot will first speeds up fro 3 second and still if it not gets in range then stops
+//     if ((Ldistance < 12&& Rdistance < 12 && count == 0) || Mdistance < 10 && Mdistance > 5) // count = 0 means first start so accelerate then move constant
 //     {
-//         stop();
+//         count = 1;
+//         moveForward();
+//         velocity();
 //     }
 
+//     else if ((Mdistance < 5 || Ldistance < 5 || Rdistance < 5) && count > 0) // when robot is moving and person moves back withn 50 cm then robot moves back
+//     {
+//         count = 0;
+//         moveBack();
+//     }
+//     else if (Ldistance < 12 && Rdistance < 12 && Mdistance < 10 && count == 1) // constant movement
+//     {
+//         count = 2;
+//         velocity();
+//     }
 
-    if (Ldistance > 120 && Rdistance > 120 && Mdistance > 100 && count == 2)
-    {
-        stop();
-    }
-    else if (Ldistance == 50 && Rdistance == 50 && Mdistance == 50 )
-    {
-        count = 0;
-        instantstop();
-    }
+// //     if (Ldistance > 120 && Rdistance > 120 && Mdistance > 100) // Human is 120 cm far from robot then robot will first speeds up fro 3 second and still if it not gets in range then stops
+// //     {
+// //         stop();
+// //     }
+
+
+//     if (Ldistance > 12 && Rdistance > 12 && Mdistance > 10 && count == 2)
+//     {
+//         instantstop();
+//     }
+//     else if (Ldistance == 5 && Rdistance == 5 && Mdistance == 5 )
+//     {
+//         count = 0;
+//         instantstop();
+//     }
 
     //######################################################
 }
@@ -130,6 +130,8 @@ void distanceMeasure()
     // Convert the time into a distance
     //##Distance = (Time x speed of sound in cm/ms ) / 2(sound has to travel back and forth.)
     Mdistance = (Mduration / 2) * 0.0343; // Divide by 29.1 or multiply by 0.0343
+    Serial.print(" Middle : ");
+    Serial.println(Mdistance);
 
     digitalWrite(Rtrig, LOW);
     delayMicroseconds(5);
@@ -144,6 +146,8 @@ void distanceMeasure()
     // Convert the time into a distance
     //##Distance = (Time x speed of sound in cm/ms ) / 2(sound has to travel back and forth.)
     Rdistance = (Rduration / 2) * 0.0343; // Divide by 29.1 or multiply by 0.0343
+    Serial.print(" Right : ");
+    Serial.println(Rdistance);
 
     digitalWrite(Ltrig, LOW);
     delayMicroseconds(5);
@@ -154,10 +158,12 @@ void distanceMeasure()
     // Read the signal from the sensor
     pinMode(Mecho, INPUT);
     Lduration = pulseIn(Lecho, HIGH); // in microsecond
-
     // Convert the time into a distance
     //##Distance = (Time x speed of sound in cm/ms ) / 2(sound has to travel back and forth.)
     Ldistance = (Lduration / 2) * 0.0343; // Divide by 29.1 or multiply by 0.0343
+    Serial.print(" left : ");
+    Serial.println(Ldistance);
+    delay(3000);
 }
 
 void moveForward()
@@ -169,14 +175,14 @@ void moveForward()
     M4.run(FORWARD);
 
     // To avoid shock on start we accelerate it slowely.
-    for (i = 0; i < 100; i++)
+    for (i = 100; i < 255; i++)
     {
         M1.setSpeed(i);
         M2.setSpeed(i);
         M3.setSpeed(i);
         M4.setSpeed(i);
         // ( 30 usec * 100 )/1000 = 3 sec to accelerate
-        delay(30);
+        delay(10);
     }
 }
 
@@ -186,42 +192,42 @@ void velocity()
     M2.run(FORWARD);
     M3.run(FORWARD);
     M4.run(FORWARD);
-    M1.setSpeed(100);
-    M2.setSpeed(100);
-    M3.setSpeed(100);
-    M4.setSpeed(100);
+    M1.setSpeed(255);
+    M2.setSpeed(255);
+    M3.setSpeed(255);
+    M4.setSpeed(255);
     // delay(1000);
 }
 
 void moveLeft()
 {
     M1.run(BACKWARD);
-    M1.setSpeed(50);
+    M1.setSpeed(255);
 
-    M3.run(BACKWARD);
-    M3.setSpeed(70);
+    M2.run(BACKWARD);
+    M2.setSpeed(255);
 
-    M2.run(FORWARD);
-    M2.setSpeed(120);
+    M3.run(FORWARD);
+    M3.setSpeed(255);
 
     M4.run(FORWARD);
-    M4.setSpeed(120);
+    M4.setSpeed(255);
     delay(1000);
 }
 
 void moveRight()
 {
-    M2.run(BACKWARD);
-    M2.setSpeed(50);
+    M3.run(BACKWARD);
+    M3.setSpeed(255);
 
     M4.run(BACKWARD);
-    M4.setSpeed(70);
+    M4.setSpeed(255);
 
     M1.run(FORWARD);
-    M1.setSpeed(120);
+    M1.setSpeed(255);
 
-    M3.run(FORWARD);
-    M3.setSpeed(120);
+    M2.run(FORWARD);
+    M2.setSpeed(255);
     delay(1000);
 }
 
@@ -232,17 +238,17 @@ void moveBack()
     M2.run(BACKWARD);
     M3.run(BACKWARD);
     M4.run(BACKWARD);
-    M1.setSpeed(100);
-    M2.setSpeed(100);
-    M3.setSpeed(100);
-    M4.setSpeed(100);
-    while (Mdistance < 50 || Ldistance < 50 || Rdistance < 50)
+    M1.setSpeed(255);
+    M2.setSpeed(255);
+    M3.setSpeed(255);
+    M4.setSpeed(255);
+    while (Mdistance < 5 || Ldistance < 5 || Rdistance < 5)
     {
         distanceMeasure();
-        M1.setSpeed(100);
-        M2.setSpeed(100);
-        M3.setSpeed(100);
-        M4.setSpeed(100);
+        M1.setSpeed(255);
+        M2.setSpeed(255);
+        M3.setSpeed(255);
+        M4.setSpeed(255);
         delay(500);
     }
 
@@ -259,51 +265,51 @@ void moveBack()
     // delay(500);
 }
 
-void stop()
-{
-    M1.run(FORWARD);
-    M2.run(FORWARD);
-    M3.run(FORWARD);
-    M4.run(FORWARD);
-    M1.setSpeed(200);
-    M2.setSpeed(200);
-    M3.setSpeed(200);
-    M4.setSpeed(200);
-    delay(2000);
-    distanceMeasure();
-    if (Ldistance < 120 || Rdistance < 120 || Mdistance < 100)
-    {
-        // count =0;
-        loop();
-    }
-    else
-    {
-        // M1.run(FORWARD);
-        // M2.run(FORWARD);
-        // M3.run(FORWARD);
-        // M4.run(FORWARD);
-        for (int j = 200; j >= 0; j--)
-        {
-            M1.setSpeed(j);
-            M2.setSpeed(j);
-            M3.setSpeed(j);
-            M4.setSpeed(j);
-            delay(20);
-        }
-        while (Ldistance > 120 && Rdistance > 120 && Mdistance > 100)
-        {
-            distanceMeasure();
-            M1.run(RELEASE);
-            M2.run(RELEASE);
-            M3.run(RELEASE);
-            M4.run(RELEASE);
-            M1.setSpeed(0);
-            M2.setSpeed(0);
-            M3.setSpeed(0);
-            M4.setSpeed(0);
-            count = 0;
-        }
-    }
+// void stop()
+// {
+//     M1.run(FORWARD);
+//     M2.run(FORWARD);
+//     M3.run(FORWARD);
+//     M4.run(FORWARD);
+//     M1.setSpeed(255);
+//     M2.setSpeed(255);
+//     M3.setSpeed(255);
+//     M4.setSpeed(255);
+//     delay(1000);
+    // distanceMeasure();
+    // if (Ldistance < 12 || Rdistance < 12 || Mdistance < 10)
+    // {
+    //     // count =0;
+    //     loop();
+    // }
+    // else
+    // {
+    //     // M1.run(FORWARD);
+    //     // M2.run(FORWARD);
+    //     // M3.run(FORWARD);
+    //     // M4.run(FORWARD);
+    //     for (int j = 250; j >= 0; j--)
+    //     {
+    //         M1.setSpeed(j);
+    //         M2.setSpeed(j);
+    //         M3.setSpeed(j);
+    //         M4.setSpeed(j);
+    //         delay(20);
+    //     }
+    //     while (Ldistance > 120 && Rdistance > 120 && Mdistance > 100)
+    //     {
+    //         distanceMeasure();
+    //         M1.run(RELEASE);
+    //         M2.run(RELEASE);
+    //         M3.run(RELEASE);
+    //         M4.run(RELEASE);
+    //         M1.setSpeed(0);
+    //         M2.setSpeed(0);
+    //         M3.setSpeed(0);
+    //         M4.setSpeed(0);
+    //         count = 0;
+    //     }
+    // }
 }
 
 void instantstop()
@@ -312,15 +318,19 @@ void instantstop()
         M2.run(RELEASE);
         M3.run(RELEASE);
         M4.run(RELEASE);
-    while ((Ldistance == 50 && Rdistance == 50) || Mdistance == 50)
-    {
-        distanceMeasure();
         M1.setSpeed(0);
         M2.setSpeed(0);
         M3.setSpeed(0);
         M4.setSpeed(0);
-        count = 0;
-    }
+    // while ((Ldistance == 50 && Rdistance == 50) || Mdistance == 50)
+    // {
+    //     distanceMeasure();
+    //     M1.setSpeed(0);
+    //     M2.setSpeed(0);
+    //     M3.setSpeed(0);
+    //     M4.setSpeed(0);
+    //     count = 0;
+    // }
 }
 /*
  * ######### SPEED OF EACH MOTOR ########
@@ -358,4 +368,4 @@ void instantstop()
 //     }
 // }
 
-/*############################################*/
+/*############################################*/ 
