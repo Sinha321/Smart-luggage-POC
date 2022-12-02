@@ -134,32 +134,36 @@ void loop()
     // else if (Mdistance > 10){
     //     instantstop();
     // }
-    if (Mdistance < 35 && Rdistance < 35 && Ldistance < 35 && Mdistance > 20 && Rdistance > 20 && Ldistance > 20)
+    if (Mdistance < 100 && Rdistance < 100 && Ldistance < 100 && Mdistance > 40 && Rdistance > 40 && Ldistance > 40)
     {
         moveForward();
+//        delay(2000);
         Serial.println("******************FORWARD");
     }
-    else if (Mdistance < 35 && Rdistance < 35 && Ldistance > 40)
+    else if ((Mdistance < 100 || Rdistance < 100) && Ldistance > 110)
     {
         turnRight();
+//        delay(2000);
         Serial.println("******************RIGHT");
     }
-    else if (Mdistance < 35 && Rdistance > 40 && Ldistance < 35)
+    else if ((Mdistance < 100  || Ldistance < 100) && Rdistance > 110)
     {
         turnLeft();
+//        delay(2000);
         Serial.println("******************LEFT");
     }
-    else if (Mdistance < 10 || Rdistance < 10 || Ldistance < 10){
+    else if (Mdistance < 30 || Rdistance < 30 || Ldistance < 30)
+    {
         moveBackward();
+//       delay(2000);
         Serial.println("******************BACK");
     }
-    else{
-        goesForward = false;
-        goesBackward = false;
+    else
+    {
         moveStop();
+//        delay(2000);
         Serial.println("******************STOP");
     }
-
 
     //######################################################
 }
@@ -218,6 +222,8 @@ void distanceMeasure()
 
 void moveStop()
 {
+    goesForward = false;
+    goesBackward = false;
     motor1.run(RELEASE);
     motor2.run(RELEASE);
     motor3.run(RELEASE);
@@ -229,6 +235,7 @@ void moveForward()
 
     if (!goesForward)
     {
+        Serial.println("!!!!!!!!!!!!     F     !!!!!!!!!!!!!!");
         goesForward = true;
         goesBackward = false;
         motor1.run(FORWARD);
@@ -248,21 +255,23 @@ void moveForward()
 
 void moveBackward()
 {
-    if(!goesBackward){
-    goesForward = false;
-    goesBackward = true;
-    motor1.run(BACKWARD);
-    motor2.run(BACKWARD);
-    motor3.run(BACKWARD);
-    motor4.run(BACKWARD);
-    for (speedSet = 0; speedSet < MAX_SPEED; speedSet += 2) // slowly bring the speed up to avoid loading down the batteries too quickly
+    if (!goesBackward)
     {
-        motor1.setSpeed(speedSet);
-        motor2.setSpeed(speedSet);
-        motor3.setSpeed(speedSet);
-        motor4.setSpeed(speedSet);
-        delay(5);
-    }
+        Serial.println("!!!!!!!!!!!!     B     !!!!!!!!!!!!!!");
+        goesForward = false;
+        goesBackward = true;
+        motor1.run(BACKWARD);
+        motor2.run(BACKWARD);
+        motor3.run(BACKWARD);
+        motor4.run(BACKWARD);
+        for (speedSet = 0; speedSet < MAX_SPEED; speedSet += 2) // slowly bring the speed up to avoid loading down the batteries too quickly
+        {
+            motor1.setSpeed(speedSet);
+            motor2.setSpeed(speedSet);
+            motor3.setSpeed(speedSet);
+            motor4.setSpeed(speedSet);
+            delay(5);
+        }
     }
 }
 
@@ -286,23 +295,23 @@ void turnRight()
     motor3.run(BACKWARD);
     motor4.run(BACKWARD);
     delay(200);
-    motor1.run(FORWARD);
-    motor2.run(FORWARD);
-    motor3.run(FORWARD);
-    motor4.run(FORWARD);
+//    motor1.run(FORWARD);
+//    motor2.run(FORWARD);
+//    motor3.run(FORWARD);
+//    motor4.run(FORWARD);
 }
 
 void turnLeft()
 {
     motor1.run(BACKWARD);
-    motor2.run(BACKWARD);
+    motor2.run(BACKWARD); 
     motor3.run(FORWARD);
     motor4.run(FORWARD);
     delay(200);
-    motor1.run(FORWARD);
-    motor2.run(FORWARD);
-    motor3.run(FORWARD);
-    motor4.run(FORWARD);
+//    motor1.run(FORWARD);
+//    motor2.run(FORWARD);
+//    motor3.run(FORWARD);
+//    motor4.run(FORWARD);
 }
 
 // void moveForward()
