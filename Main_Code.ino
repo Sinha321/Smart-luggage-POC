@@ -545,6 +545,51 @@ int turnLeft(int z)
 //     }
 // }
 
+// int lookRight()
+// {
+//     myservo.write(40);
+//     delay(500);
+//     distanceMeasure();
+//     delay(500);
+//     if (Mdistance < 40)
+//     {
+//         myservo.write(90);
+//         turnRight(200);
+//         return 1;
+//     }
+//     myservo.write(90);
+//     delay(500);
+//     if (Mdistance < 40)
+//     {
+//         moveForward();
+//         return 0;
+//     }
+//     else{
+//         return 2;
+//     }
+//     // return Mdistance;
+// }
+
+// int lookLeft()
+// {
+//     myservo.write(140);
+//     delay(500);
+//     distanceMeasure();
+//     delay(500);
+//     if (Mdistance < 40)
+//     {
+//         turnLeft(200);
+//         return;
+//     }
+//     myservo.write(90);
+//     delay(500);
+//     if (Mdistance < 40)
+//     {
+//         moveForward();
+//         return;
+//     }
+//     // delay(100);
+// }
 int lookRight()
 {
     myservo.write(40);
@@ -554,19 +599,19 @@ int lookRight()
     if (Mdistance < 40)
     {
         myservo.write(90);
+        delay(100);
         turnRight(200);
         return 1;
     }
     myservo.write(90);
     delay(500);
+    distanceMeasure();
     if (Mdistance < 40)
     {
         moveForward();
         return 0;
     }
-    else{
-        return 2;
-    }
+    lookLeft();
     // return Mdistance;
 }
 
@@ -578,16 +623,20 @@ int lookLeft()
     delay(500);
     if (Mdistance < 40)
     {
+        myservo.write(90);
+        delay(100);
         turnLeft(200);
-        return;
+        return 2;
     }
     myservo.write(90);
     delay(500);
+    distanceMeasure();
     if (Mdistance < 40)
     {
         moveForward();
-        return;
+        return 0;
     }
+    lookRight();
     // delay(100);
 }
 
