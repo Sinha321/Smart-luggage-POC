@@ -18,8 +18,8 @@
 /*  Motor Connections(M)
             __
       motor1(O):  :(O)motor4
-           |  |
-           |  |
+               |  |
+               |  |
       motor2(O):__:(O)motor3
 
 */
@@ -244,8 +244,8 @@ void loop()
     // here:
         distanceR = lookRight();
         delay(500);
-        distanceL = lookLeft();
-        delay(500);
+        // distanceL = lookLeft();
+        // delay(500);
         // if (distanceL < 40)
         // {
         //     turnLeft(200);
@@ -545,51 +545,6 @@ int turnLeft(int z)
 //     }
 // }
 
-// int lookRight()
-// {
-//     myservo.write(40);
-//     delay(500);
-//     distanceMeasure();
-//     delay(500);
-//     if (Mdistance < 40)
-//     {
-//         myservo.write(90);
-//         turnRight(200);
-//         return 1;
-//     }
-//     myservo.write(90);
-//     delay(500);
-//     if (Mdistance < 40)
-//     {
-//         moveForward();
-//         return 0;
-//     }
-//     else{
-//         return 2;
-//     }
-//     // return Mdistance;
-// }
-
-// int lookLeft()
-// {
-//     myservo.write(140);
-//     delay(500);
-//     distanceMeasure();
-//     delay(500);
-//     if (Mdistance < 40)
-//     {
-//         turnLeft(200);
-//         return;
-//     }
-//     myservo.write(90);
-//     delay(500);
-//     if (Mdistance < 40)
-//     {
-//         moveForward();
-//         return;
-//     }
-//     // delay(100);
-// }
 int lookRight()
 {
     myservo.write(40);
@@ -870,3 +825,7 @@ int lookLeft()
 // // }
 
 /*############################################*/
+
+
+
+
