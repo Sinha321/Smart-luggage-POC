@@ -7,109 +7,157 @@
 
 */
 
-/* Recommended libraries
-    https://downloads.arduino.cc/libraries/github.com/adafruit/Adafruit_Motor_Shield_library-1.0.1.zip
-    Add this Zip File in Sketch > include Library > Add .zip Library.
-    Install the libraries Tools > Manage Libraries > Adafruit Motor Shield V2 & V1 both (Install).
-*/
-
-#include <AFMotor.h>
-
 /*  Motor Connections(M)
             __
-      M1(O):  :(O)M4
-           |  |
-           |  |
-      M2(O):__:(O)M3
+      motor1(O):  :(O)motor4
+               |  |
+               |  |
+      motor2(O):__:(O)motor3
 
 */
 
-AF_DCMotor M1(1);
-AF_DCMotor M2(2);
-AF_DCMotor M3(3);
-AF_DCMotor M4(4);
-int i = 0;
+#include <AFMotor.h> //To Control Motor Movements
+#include <Servo.h> //To Control Servo motor
+
+#define MAX_DISTANCE 200
+#define MAX_SPEED 110 // sets speed of DC  motors
+#define MAX_SPEED_OFFSET 20 
+
+AF_DCMotor motor1(1, MOTOR12_1KHZ);
+AF_DCMotor motor2(2, MOTOR12_1KHZ);
+AF_DCMotor motor3(3, MOTOR34_1KHZ);
+AF_DCMotor motor4(4, MOTOR34_1KHZ);
+
+boolean goesForward = false;
+boolean goesBackward = false;
+
+unsigned int speedSet = 0;
 
 /* Declaring Middle Ultrasonic Pins */
-#define Mtrig A0
-#define Mecho A1
-int Mduration = 0, Mdistance = 0;
+#define Mtrig A1
+#define Mecho A0
+unsigned int Mduration = 0, Mdistance = 0;
 
-/* Declaring Right Ultrasonic Pins */
-#define Rtrig A2
-#define Recho A3
-int Rduration = 0, Rdistance = 0;
 
-/* Declaring left Ultrasonic Pins */
-#define Ltrig A4
-#define Lecho A5
-int Lduration = 0, Ldistance = 0;
+#define RIGHT A2 // Right IR sensor connected to analog pin A2 of Arduino Uno:
+#define LEFT A3  // Left IR sensor connected to analog pin A3 of Arduino Uno:
 
-int previousState = 0;
-int count = 0;
+Servo myservo;
+int pos = 0;
+
+unsigned int Right_Value = 0; // Variable to store Right IR sensor value:
+unsigned int Left_Value = 0;  // Variable to store Left IR sensor value:
+unsigned int count = 0;
+unsigned int R_S = 0;
+unsigned int L_S = 0;
+
 void setup()
 {
 
-    M1.setSpeed(255); // Motor Maximum Speed Configured.
-    // M1.run(RELEASE);  // Motor is Configured in Release mode.
-    M2.setSpeed(255);
-    // M2.run(RELEASE);
-    M3.setSpeed(255);
-    // M3.run(RELEASE);
-    M4.setSpeed(255);
-    // M4.run(RELEASE);
 
     /* Configure input and output port of sensors */
     pinMode(Mtrig, OUTPUT);
     pinMode(Mecho, INPUT);
-    // Right
-    pinMode(Rtrig, OUTPUT);
-    pinMode(Recho, INPUT);
-    // Left
-    pinMode(Ltrig, OUTPUT);
-    pinMode(Lecho, INPUT);
-    Serial.begin(9600); // Settng baudrate
+
+
+    Serial.begin(9600); // initailize serial communication at 9600 bits per second:
+    myservo.attach(10); // servo attached to pin 10 of Arduino UNO
+
+    {
+        for (pos = 100; pos <= 180; pos += 1)
+        {                       // goes from 100 degrees to 180 degrees:
+            myservo.write(pos); // tell servo to move according to the value of 'pos' variable:
+            delay(15);          // wait 15ms for the servo to reach the position:
+        }
+        for (pos = 180; pos >= 0; pos -= 1)
+        {                       // goes from 180 degrees to 0 degrees:
+            myservo.write(pos); // tell servo to move according to the value of 'pos' variable:
+            delay(15);          // wait 15ms for the servo to reach the position:
+        }
+        for (pos = 0; pos <= 100; pos += 1)
+        {                       // goes from 180 degrees to 0 degrees:
+            myservo.write(pos); // tell servo to move according to the value of 'pos' variable:
+            delay(15);          // wait 15ms for the servo to reach the position:
+        }
+    }
+    myservo.write(100);
+    delay(2000);
+    pinMode(RIGHT, INPUT); // set analog pin RIGHT as an input:
+    pinMode(LEFT, INPUT);  // set analog pin RIGHT as an input:
 }
 
 void loop()
 {
-    distanceMeasure();
+    delay(50);
+    distanceMeasure();    
+    Right_Value = digitalRead(RIGHT); // read the value from Right IR sensor:
+    delay(20);
+    Left_Value = digitalRead(LEFT);   // read the value from Left IR sensor:
 
-    //######################################################
+    Serial.print("RIGHT : ");
+    Serial.println(Right_Value);
+    Serial.print("LEFT : ");
+    Serial.println(Left_Value);
 
-//     if ((Ldistance < 12&& Rdistance < 12 && count == 0) || Mdistance < 10 && Mdistance > 5) // count = 0 means first start so accelerate then move constant
-//     {
-//         count = 1;
-//         moveForward();
-//         velocity();
-//     }
-
-//     else if ((Mdistance < 5 || Ldistance < 5 || Rdistance < 5) && count > 0) // when robot is moving and person moves back withn 50 cm then robot moves back
-//     {
-//         count = 0;
-//         moveBack();
-//     }
-//     else if (Ldistance < 12 && Rdistance < 12 && Mdistance < 10 && count == 1) // constant movement
-//     {
-//         count = 2;
-//         velocity();
-//     }
-
-// //     if (Ldistance > 120 && Rdistance > 120 && Mdistance > 100) // Human is 120 cm far from robot then robot will first speeds up fro 3 second and still if it not gets in range then stops
-// //     {
-// //         stop();
-// //     }
-
-
-//     if (Ldistance > 12 && Rdistance > 12 && Mdistance > 10 && count == 2)
-//     {
-//         instantstop();
-//     }
-//     else if (Ldistance == 5 && Rdistance == 5 && Mdistance == 5 )
-//     {
-//         count = 0;
-//         instantstop();
-//     }
+    if (Mdistance < 50 && Mdistance > 15 && (Right_Value == 1) && (Left_Value == 1))
+    {
+        moveForward();
+        // delay(2000);
+        Serial.println("******************FORWARD");
+    }
+    else if ((Right_Value == 0 && Left_Value == 1) || (Right_Value == 1 && Left_Value == 0))
+    {
+        moveStop();
+        // count++;
+        Serial.print("RIGHT : ");
+        Serial.println(Right_Value);
+        Serial.print("LEFT : ");
+        Serial.println(Left_Value);
+        if ((Right_Value == 0 && Left_Value == 1))
+        {
+            // delay(1000);
+            Serial.println("***************** Right first");
+            while (Left_Value)
+            {
+                Left_Value = digitalRead(LEFT);
+                delay(20);
+            }
+            Serial.println("***************** START ");
+            // delay(1000);
+        }
+        else if ((Right_Value == 1 && Left_Value == 0))
+        {
+            // delay(1000);
+            Serial.println("*****************Left First ");
+            while (Right_Value)
+            {
+                Right_Value = digitalRead(RIGHT);
+                delay(20);
+            }
+            Serial.println("***************** START");
+            // delay(1000);
+        }
+    }
+    else if (Mdistance < 10 && (Right_Value == 0) && (Left_Value == 0))
+    {
+        moveBackward();
+        Right_Value = 1;
+        Left_Value = 1;
+        // delay(2000);
+        Serial.println("******************BACK");
+    }
+    else if (Mdistance > 50 && (Right_Value == 1) && (Left_Value == 1))
+    {
+        moveStop();
+        delay(100);
+        lookRight();
+    }
+    else
+    {
+        moveStop();
+        // delay(2000);
+        Serial.println("******************STOP");
+    }
 
     //######################################################
 }
@@ -118,9 +166,9 @@ void distanceMeasure()
 {
     // Middle ultrasonic
     digitalWrite(Mtrig, LOW);
-    delayMicroseconds(5);
+    delayMicroseconds(2);
     digitalWrite(Mtrig, HIGH);
-    delayMicroseconds(10);
+    delayMicroseconds(6);
     digitalWrite(Mtrig, LOW);
 
     // Read the signal from the sensor
@@ -132,240 +180,148 @@ void distanceMeasure()
     Mdistance = (Mduration / 2) * 0.0343; // Divide by 29.1 or multiply by 0.0343
     Serial.print(" Middle : ");
     Serial.println(Mdistance);
+    delay(2);
+}
 
-    digitalWrite(Rtrig, LOW);
-    delayMicroseconds(5);
-    digitalWrite(Rtrig, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(Rtrig, LOW);
-
-    // Read the signal from the sensor
-    pinMode(Recho, INPUT);
-    Rduration = pulseIn(Recho, HIGH); // in microsecond
-
-    // Convert the time into a distance
-    //##Distance = (Time x speed of sound in cm/ms ) / 2(sound has to travel back and forth.)
-    Rdistance = (Rduration / 2) * 0.0343; // Divide by 29.1 or multiply by 0.0343
-    Serial.print(" Right : ");
-    Serial.println(Rdistance);
-
-    digitalWrite(Ltrig, LOW);
-    delayMicroseconds(5);
-    digitalWrite(Ltrig, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(Ltrig, LOW);
-
-    // Read the signal from the sensor
-    pinMode(Mecho, INPUT);
-    Lduration = pulseIn(Lecho, HIGH); // in microsecond
-    // Convert the time into a distance
-    //##Distance = (Time x speed of sound in cm/ms ) / 2(sound has to travel back and forth.)
-    Ldistance = (Lduration / 2) * 0.0343; // Divide by 29.1 or multiply by 0.0343
-    Serial.print(" left : ");
-    Serial.println(Ldistance);
-    delay(3000);
+void moveStop()
+{
+    goesForward = false;
+    goesBackward = false;
+    motor1.run(RELEASE);
+    motor2.run(RELEASE);
+    motor3.run(RELEASE);
+    motor4.run(RELEASE);
 }
 
 void moveForward()
 {
-    // Accelerate FORWARD
-    M1.run(FORWARD);
-    M2.run(FORWARD);
-    M3.run(FORWARD);
-    M4.run(FORWARD);
 
-    // To avoid shock on start we accelerate it slowely.
-    for (i = 100; i < 255; i++)
+    if (!goesForward)
     {
-        M1.setSpeed(i);
-        M2.setSpeed(i);
-        M3.setSpeed(i);
-        M4.setSpeed(i);
-        // ( 30 usec * 100 )/1000 = 3 sec to accelerate
-        delay(10);
+        Serial.println("!!!!!!!!!!!!     F     !!!!!!!!!!!!!!");
+        goesForward = true;
+        goesBackward = false;
+        motor1.run(FORWARD);
+        motor2.run(FORWARD);
+        motor3.run(FORWARD);
+        motor4.run(FORWARD);
+        for (speedSet = 0; speedSet < MAX_SPEED; speedSet += 5) 
+        {
+            motor1.setSpeed(speedSet);
+            motor2.setSpeed(speedSet);
+            motor3.setSpeed(speedSet);
+            motor4.setSpeed(speedSet);
+            delay(5);
+        }
     }
 }
 
-void velocity()
+void moveBackward()
 {
-    M1.run(FORWARD);
-    M2.run(FORWARD);
-    M3.run(FORWARD);
-    M4.run(FORWARD);
-    M1.setSpeed(255);
-    M2.setSpeed(255);
-    M3.setSpeed(255);
-    M4.setSpeed(255);
-    // delay(1000);
-}
-
-void moveLeft()
-{
-    M1.run(BACKWARD);
-    M1.setSpeed(255);
-
-    M2.run(BACKWARD);
-    M2.setSpeed(255);
-
-    M3.run(FORWARD);
-    M3.setSpeed(255);
-
-    M4.run(FORWARD);
-    M4.setSpeed(255);
-    delay(1000);
-}
-
-void moveRight()
-{
-    M3.run(BACKWARD);
-    M3.setSpeed(255);
-
-    M4.run(BACKWARD);
-    M4.setSpeed(255);
-
-    M1.run(FORWARD);
-    M1.setSpeed(255);
-
-    M2.run(FORWARD);
-    M2.setSpeed(255);
-    delay(1000);
-}
-
-void moveBack()
-{
-    // Accelerate FORWARD
-    M1.run(BACKWARD);
-    M2.run(BACKWARD);
-    M3.run(BACKWARD);
-    M4.run(BACKWARD);
-    M1.setSpeed(255);
-    M2.setSpeed(255);
-    M3.setSpeed(255);
-    M4.setSpeed(255);
-    while (Mdistance < 5 || Ldistance < 5 || Rdistance < 5)
+    if (!goesBackward)
     {
-        distanceMeasure();
-        M1.setSpeed(255);
-        M2.setSpeed(255);
-        M3.setSpeed(255);
-        M4.setSpeed(255);
-        delay(500);
+        Serial.println("!!!!!!!!!!!!     B     !!!!!!!!!!!!!!");
+        goesForward = false;
+        goesBackward = true;
+        motor1.run(BACKWARD);
+        motor2.run(BACKWARD);
+        motor3.run(BACKWARD);
+        motor4.run(BACKWARD);
+        for (speedSet = 0; speedSet < MAX_SPEED; speedSet += 6)
+        {
+            motor1.setSpeed(speedSet);
+            motor2.setSpeed(speedSet);
+            motor3.setSpeed(speedSet);
+            motor4.setSpeed(speedSet);
+            delay(5);
+        }
+        delay(400);
     }
-
-    // // To avoid shock on start we accelerate it slowely.
-    // for (i = 0; i < 100; i++)
-    // {
-    //     M1.setSpeed(i);
-    //     M2.setSpeed(i);
-    //     M3.setSpeed(i);
-    //     M4.setSpeed(i);
-    //     // ( 30 usec * 100 )/1000 = 3 sec to accelerate
-    //     delay(30);
-    // }
-    // delay(500);
 }
 
-// void stop()
-// {
-//     M1.run(FORWARD);
-//     M2.run(FORWARD);
-//     M3.run(FORWARD);
-//     M4.run(FORWARD);
-//     M1.setSpeed(255);
-//     M2.setSpeed(255);
-//     M3.setSpeed(255);
-//     M4.setSpeed(255);
-//     delay(1000);
-    // distanceMeasure();
-    // if (Ldistance < 12 || Rdistance < 12 || Mdistance < 10)
-    // {
-    //     // count =0;
-    //     loop();
-    // }
-    // else
-    // {
-    //     // M1.run(FORWARD);
-    //     // M2.run(FORWARD);
-    //     // M3.run(FORWARD);
-    //     // M4.run(FORWARD);
-    //     for (int j = 250; j >= 0; j--)
-    //     {
-    //         M1.setSpeed(j);
-    //         M2.setSpeed(j);
-    //         M3.setSpeed(j);
-    //         M4.setSpeed(j);
-    //         delay(20);
-    //     }
-    //     while (Ldistance > 120 && Rdistance > 120 && Mdistance > 100)
-    //     {
-    //         distanceMeasure();
-    //         M1.run(RELEASE);
-    //         M2.run(RELEASE);
-    //         M3.run(RELEASE);
-    //         M4.run(RELEASE);
-    //         M1.setSpeed(0);
-    //         M2.setSpeed(0);
-    //         M3.setSpeed(0);
-    //         M4.setSpeed(0);
-    //         count = 0;
-    //     }
-    // }
-}
-
-void instantstop()
+int turnRight(int z)
 {
-        M1.run(RELEASE);
-        M2.run(RELEASE);
-        M3.run(RELEASE);
-        M4.run(RELEASE);
-        M1.setSpeed(0);
-        M2.setSpeed(0);
-        M3.setSpeed(0);
-        M4.setSpeed(0);
-    // while ((Ldistance == 50 && Rdistance == 50) || Mdistance == 50)
-    // {
-    //     distanceMeasure();
-    //     M1.setSpeed(0);
-    //     M2.setSpeed(0);
-    //     M3.setSpeed(0);
-    //     M4.setSpeed(0);
-    //     count = 0;
-    // }
+    motor1.setSpeed(200);
+    motor2.setSpeed(200);
+    motor3.setSpeed(200);
+    motor4.setSpeed(200);
+    Serial.println("******* RIGHT TURN ********");
+    motor1.run(FORWARD);
+    motor2.run(FORWARD);
+    motor3.run(BACKWARD);
+    motor4.run(BACKWARD);
+    delay(z);
+    motor1.setSpeed(MAX_SPEED);
+    motor2.setSpeed(MAX_SPEED);
+    motor3.setSpeed(MAX_SPEED);
+    motor4.setSpeed(MAX_SPEED);   
 }
-/*
- * ######### SPEED OF EACH MOTOR ########
- */
-// void speedM1(int speed1, int delay1)
-// {
-//     for (int j = 0; j < speed1; j++)
-//     {
-//         M1.setSpeed(j);
-//         delay(delay1);
-//     }
-// }
-// void speedM2(int speed1, int delay1)
-// {
-//     for (int j = 0; j < speed1; j++)
-//     {
-//         M2.setSpeed(j);
-//         delay(delay1);
-//     }
-// }
-// void speedM3(int speed1, int delay1)
-// {
-//     for (int j = 0; j < speed1; j++)
-//     {
-//         M3.setSpeed(j);
-//         delay(delay1);
-//     }
-// }
-// void speedM4(int speed1, int delay1)
-// {
-//     for (int j = 0; j < speed1; j++)
-//     {
-//         M4.setSpeed(j);
-//         delay(delay1);
-//     }
-// }
 
-/*############################################*/ 
+int turnLeft(int z)
+{
+    motor1.setSpeed(200);
+    motor2.setSpeed(200);
+    motor3.setSpeed(200);
+    motor4.setSpeed(200);
+    Serial.println("******* LEFT TURN ********");
+    motor1.run(BACKWARD);
+    motor2.run(BACKWARD);
+    motor3.run(FORWARD);
+    motor4.run(FORWARD);
+    delay(z);
+    motor1.setSpeed(MAX_SPEED);
+    motor2.setSpeed(MAX_SPEED);
+    motor3.setSpeed(MAX_SPEED);
+    motor4.setSpeed(MAX_SPEED);
+}
+
+
+
+int lookRight()
+{
+    myservo.write(50);
+    delay(500);
+    distanceMeasure();
+    delay(500);
+    if (Mdistance < 50)
+    {
+        myservo.write(100);
+        delay(100);
+        turnRight(200);
+        return 1;
+    }
+    myservo.write(100);
+    delay(500);
+    distanceMeasure();
+    if (Mdistance < 50)
+    {
+        moveForward();
+        return 0;
+    }
+    lookLeft();
+}
+
+int lookLeft()
+{
+    myservo.write(150);
+    delay(500);
+    distanceMeasure();
+    delay(500);
+    if (Mdistance < 50)
+    {
+        myservo.write(100);
+        delay(100);
+        turnLeft(200);
+        return 2;
+    }
+    myservo.write(100);
+    delay(500);
+    distanceMeasure();
+    if (Mdistance < 50)
+    {
+        moveForward();
+        return 0;
+    }
+    lookRight();
+}
+
