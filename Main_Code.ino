@@ -18,8 +18,8 @@
 /*  Motor Connections(M)
             __
       motor1(O):  :(O)motor4
-               |  |
-               |  |
+           |  |
+           |  |
       motor2(O):__:(O)motor3
 
 */
@@ -576,6 +576,7 @@ int lookLeft()
     delay(500);
     distanceMeasure();
     delay(500);
+    //It will look left and measure the distance
     if (Mdistance < 40)
     {
         myservo.write(90);
