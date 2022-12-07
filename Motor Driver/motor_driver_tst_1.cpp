@@ -99,7 +99,7 @@ void loop()
     Serial.print("LEFT : ");
     Serial.println(Left_Value);
 
-    if (Mdistance < 50 && Mdistance > 15 && (Right_Value == 1) && (Left_Value == 1))
+    if (Mdistance < 45 && Mdistance > 15 && (Right_Value == 1) && (Left_Value == 1))
     {
         moveForward();
         // delay(2000);
@@ -146,11 +146,12 @@ void loop()
         // delay(2000);
         Serial.println("******************BACK");
     }
-    else if (Mdistance > 50 && (Right_Value == 1) && (Left_Value == 1))
+    else if (Mdistance > 40 && (Right_Value == 1) && (Left_Value == 1))
     {
         moveStop();
         delay(100);
         lookRight();
+        //It will look right first and then recursively call the left function 
     }
     else
     {
@@ -279,13 +280,15 @@ int turnLeft(int z)
 
 int lookRight()
 {
-    myservo.write(50);
+    myservo.write(50); 
     delay(500);
     distanceMeasure();
+    //First it will look right for the human and mesures the distance 
     delay(500);
     if (Mdistance < 50)
     {
         myservo.write(100);
+        // If distance < 50 then it will start movement
         delay(100);
         turnRight(200);
         return 1;
