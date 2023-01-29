@@ -1,4 +1,4 @@
-# Human Following & Obstacle Avoidance Luggage (POC) ✅
+# Human Following & Obstacle Avoidance Luggage (POC)
 
 In this project we present a prototype proof of concept that uses Arduino Uno along with sensors. It can follow humans and carry their luggage at the same time it can avoid the interference of other humans or animals that passes in between. 
 
