@@ -17,7 +17,7 @@ Everyone tries to carry less baggage as it assures comfort but at times we donâ€
 <img
   src="https://github.com/Smart-Luggage-POC/Smart-luggage-POC/blob/main/images/Schematic.png"
   alt="Schematic"
-  style="display: inline-block; margin: 0 auto; max-width: 60%;">
+  style="display: inline-block; margin: 0 auto; width: 600px; height:400px">
 
 
 ## Flow Chart of working model
