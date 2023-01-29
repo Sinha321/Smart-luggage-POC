@@ -9,5 +9,12 @@ Our objective is to serve old people and medical centers or handicaped people to
 A four wheel luggage carrier robot that can automatically mimic some human movements and functions like moving back left right and front with humans. To follow a person within a certain distance and avoid obstacles at the same time. 
 Everyone tries to carry less baggage as it assures comfort but at times we don’t have a choice other than carrying huge and heavy luggages for long distance travel. A shopping-time robot that carries goods and walks behind people without a controller would be more helpful.
 
-The main objective behind this project is to lift heavy items & follow the person which gives them relief in lifting their luggages or shopping carts in malls, airports, stations and many other places. In fact  this robot can be more useful among older aged people ensuring convenient transportation. The human-following robot performs a variety of tasks, such as  delivering medications more quickly and accurately.
+#### The main objectives are : 
+* Luggage Carrier and Follower
+* Automated Wheel Chair at Hospitals
+
+## Schematic of the robot
+
+
+
 
