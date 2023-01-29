@@ -14,7 +14,15 @@ Everyone tries to carry less baggage as it assures comfort but at times we donâ€
 * Automated Wheel Chair at Hospitals
 
 ## Schematic of the robot
+<img
+  src="https://github.com/Smart-Luggage-POC/Smart-luggage-POC/blob/main/images/Schematic.png"
+  alt="Schematic"
+  style="display: inline-block; margin: 0 auto; max-width: 100%">
 
 
+## Flow Chart of working model
+
+
+## Working Methodology of Human Following
 
 
